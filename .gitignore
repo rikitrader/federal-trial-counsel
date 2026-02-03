@@ -1,3 +1,21 @@
+# Unencrypted skill content (use .encrypted version)
+assets/
+modules/
+references/
+workflows/
+SKILL.md
+MANIFEST.md
+scripts/federal_pleading_engine/
+scripts/courtlistener/
+
+# Keep these files visible
+!README.md
+!UNLOCK_INSTRUCTIONS.md
+!LICENSE
+!scripts/unlock.sh
+!scripts/encrypt.sh
+!.encrypted/
+
 # Dependencies
 node_modules/
 package-lock.json

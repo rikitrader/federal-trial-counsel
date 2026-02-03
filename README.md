@@ -31,6 +31,28 @@
 
 Elite United States federal trial attorney and strategic legal advisor for U.S. District Courts with comprehensive civil litigation expertise.
 
+---
+
+## 🔐 PROTECTED REPOSITORY - PASSWORD REQUIRED
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   ⚠️  THIS REPOSITORY CONTAINS ENCRYPTED SKILL FILES  ⚠️                      ║
+║                                                                               ║
+║   To unlock and install the Federal Trial Counsel skill:                      ║
+║                                                                               ║
+║   1. Clone this repository                                                    ║
+║   2. Run: ./scripts/unlock.sh                                                 ║
+║   3. Enter the password (contact owner for access)                            ║
+║                                                                               ║
+║   See UNLOCK_INSTRUCTIONS.md for detailed steps.                              ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
 ## Overview
 
 This Claude Code skill transforms Claude into a senior federal trial attorney with deep expertise in federal civil litigation, from complaint drafting through appeal. It includes:
