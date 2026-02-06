@@ -795,6 +795,45 @@ def run_case_wizard(state: CaseState, case_data: dict) -> None:
             case_data = collector(state, case_data)
 
 
+def _merge_auto_data(case_data: dict, auto: dict) -> None:
+    """Merge auto-extracted data into case_data (in place)."""
+    if "parties" in auto:
+        for p in auto["parties"].get("plaintiffs", []):
+            existing = [x["name"] for x in case_data.get("parties", {}).get("plaintiffs", [])]
+            if p["name"] not in existing:
+                case_data.setdefault("parties", {}).setdefault("plaintiffs", []).append(p)
+        for d in auto["parties"].get("defendants", []):
+            existing = [x["name"] for x in case_data.get("parties", {}).get("defendants", [])]
+            if d["name"] not in existing:
+                case_data.setdefault("parties", {}).setdefault("defendants", []).append(d)
+    if "court" in auto and not case_data.get("court", {}).get("district"):
+        case_data["court"] = auto["court"]
+
+
+def _run_doc_analysis(state: CaseState, case_data: dict) -> dict:
+    """Analyze imported documents, show report, offer auto-populate."""
+    from .doc_analyzer import analyze_intake_docs, format_analysis_report
+
+    print("\n  Analyzing documents...")
+    report = analyze_intake_docs(state.case_number)
+    print(format_analysis_report(report))
+
+    if report.auto_populated and _prompt_yes_no("Apply extracted data to case?", default=True):
+        _merge_auto_data(case_data, report.auto_populated)
+        save_case_data(state.case_number, case_data)
+        print("  Auto-extracted data applied.")
+
+    if report.suggested_workflow != "new_case":
+        from .doc_analyzer import _WORKFLOW_LABELS
+        label = _WORKFLOW_LABELS.get(report.suggested_workflow, report.suggested_workflow)
+        print(f"\n  Suggested workflow: {label}")
+        for rec in report.recommendations:
+            print(f"    -> {rec}")
+        print()
+
+    return case_data
+
+
 def start_wizard() -> None:
     """Main wizard entry — asks new vs existing, routes accordingly."""
     _print_header("FEDERAL TRIAL COUNSEL — CASE WIZARD")
@@ -816,6 +855,7 @@ def start_wizard() -> None:
             try:
                 imported = import_documents(state.case_number, doc_path)
                 print(f"  Imported {len(imported)} document(s)")
+                case_data = _run_doc_analysis(state, case_data)
             except FileNotFoundError as e:
                 print(f"  Warning: {e}")
 
@@ -854,6 +894,7 @@ def start_wizard() -> None:
             try:
                 imported = import_documents(state.case_number, doc_path)
                 print(f"  Imported {len(imported)} document(s)")
+                case_data = _run_doc_analysis(state, case_data)
             except FileNotFoundError as e:
                 print(f"  Warning: {e}")
 

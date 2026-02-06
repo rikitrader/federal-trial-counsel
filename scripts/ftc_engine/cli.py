@@ -26,6 +26,7 @@ Commands:
   new        - Interactive case wizard (new or existing case)
   open       - Open/resume an existing case
   cases      - List all saved cases
+  analyze-docs - Analyze intake documents for a case
   setup      - Auto-install dependencies and configure environment
   doctor     - Diagnostic health check
 
@@ -562,6 +563,13 @@ def cmd_cases(args):
         print()
 
 
+def cmd_analyze_docs(args):
+    """Analyze documents in a case's intake folder."""
+    from .doc_analyzer import analyze_intake_docs, format_analysis_report
+    report = analyze_intake_docs(args.case_number)
+    print(format_analysis_report(report))
+
+
 def cmd_doctor(args):
     """Diagnostic health check."""
     print("=" * 70)
@@ -788,6 +796,10 @@ def main():
     # cases (list)
     sub.add_parser("cases", help="List all saved cases")
 
+    # analyze-docs
+    p = sub.add_parser("analyze-docs", help="Analyze intake documents for a case")
+    p.add_argument("case_number", help="Case number to analyze")
+
     # setup
     sub.add_parser("setup", help="Auto-install dependencies and configure")
 
@@ -818,6 +830,7 @@ def main():
         "new": cmd_new,
         "open": cmd_open,
         "cases": cmd_cases,
+        "analyze-docs": cmd_analyze_docs,
         "setup": cmd_setup,
         "doctor": cmd_doctor,
     }
