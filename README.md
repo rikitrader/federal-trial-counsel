@@ -23,29 +23,31 @@
     ║                                                                          ║
     ╠══════════════════════════════════════════════════════════════════════════╣
     ║                                                                          ║
-    ║                   ⚖️  U.S. DISTRICT COURT SPECIALIST  ⚖️                  ║
+    ║              U.S. DISTRICT COURT SPECIALIST  v3.0.0                      ║
     ║                                                                          ║
-    ║          Middle District of Florida  •  11th Circuit  •  FRCP            ║
+    ║          Middle District of Florida  *  11th Circuit  *  FRCP            ║
     ║                                                                          ║
     ╠══════════════════════════════════════════════════════════════════════════╣
     ║                                                                          ║
     ║    ┌────────────────┐  ┌────────────────┐  ┌────────────────┐           ║
-    ║    │  40+ FEDERAL   │  │   MTD RISK     │  │ 19 LITIGATION  │           ║
-    ║    │    CLAIMS      │  │   SCORING      │  │    ENGINES     │           ║
+    ║    │  45 FEDERAL    │  │ 12-STEP CASE   │  │  DOCUMENT      │           ║
+    ║    │    CLAIMS      │  │   WIZARD       │  │  ANALYZER      │           ║
     ║    │                │  │                │  │                │           ║
-    ║    │  § 1983, FTCA  │  │   0-100 Score  │  │  Full Case     │           ║
-    ║    │  Title VII     │  │   + Auto-Fix   │  │  Management    │           ║
-    ║    │  RICO, APA     │  │   Suggestions  │  │  Strategies    │           ║
+    ║    │  § 1983, FTCA  │  │  Interactive   │  │  PDF/DOCX/TXT  │           ║
+    ║    │  Title VII     │  │  Case Intake   │  │  Auto-Classify │           ║
+    ║    │  RICO, APA     │  │  + Generation  │  │  + Extract     │           ║
     ║    └────────────────┘  └────────────────┘  └────────────────┘           ║
     ║                                                                          ║
     ║    ┌────────────────┐  ┌────────────────┐  ┌────────────────┐           ║
-    ║    │  TWOMBLY /     │  │  AUTO-SUGGEST  │  │    FRCP        │           ║
-    ║    │   IQBAL        │  │    CLAIMS      │  │   MASTERY      │           ║
+    ║    │  TWOMBLY /     │  │  20 CLI        │  │ 19 LITIGATION  │           ║
+    ║    │   IQBAL        │  │  COMMANDS      │  │    ENGINES     │           ║
     ║    │                │  │                │  │                │           ║
-    ║    │  Plausibility  │  │  AI-Powered    │  │  Rules 8, 12   │           ║
-    ║    │  Compliant     │  │  Fact Analysis │  │  23, 26, 56    │           ║
-    ║    │  Pleadings     │  │  & Mapping     │  │  & More        │           ║
+    ║    │  Plausibility  │  │  draft, risk   │  │  Full Case     │           ║
+    ║    │  Compliant     │  │  suggest, new  │  │  Management    │           ║
+    ║    │  Pleadings     │  │  analyze-docs  │  │  Strategies    │           ║
     ║    └────────────────┘  └────────────────┘  └────────────────┘           ║
+    ║                                                                          ║
+    ║       459 TESTS  *  19 MODULES  *  8,300 LOC  *  42 TEMPLATES           ║
     ║                                                                          ║
     ╚══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -54,12 +56,12 @@
 
 ---
 
-## 🔐 PASSWORD PROTECTED
+## PASSWORD PROTECTED
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                                                                              │
-│   🔒  THIS REPOSITORY CONTAINS ENCRYPTED SKILL FILES                         │
+│   THIS REPOSITORY CONTAINS ENCRYPTED SKILL FILES                             │
 │                                                                              │
 │   To unlock and install:                                                     │
 │                                                                              │
@@ -68,7 +70,7 @@
 │       $ ./scripts/unlock.sh                                                  │
 │       Enter password: ********                                               │
 │                                                                              │
-│   📧 Contact repository owner for access credentials                         │
+│   Contact repository owner for access credentials                            │
 │                                                                              │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -79,11 +81,15 @@
 
 This Claude Code skill transforms Claude into a senior federal trial attorney with deep expertise in federal civil litigation, from complaint drafting through appeal. It includes:
 
-- **40+ Federal Causes of Action** with element-by-element analysis
+- **45 Federal Causes of Action** with element-by-element analysis
+- **12-Step Interactive Case Wizard** for guided case intake and document generation
+- **Document Analyzer** — PDF/DOCX/TXT parsing, classification, entity extraction, workflow routing
 - **19 Litigation Strategy Engines** for complete case management
+- **Persistent Case Management** with workflow state tracking
 - **Twombly/Iqbal Compliant** pleading generation
 - **MTD Risk Scoring** (0-100) with vulnerability fixes
 - **Auto-Trigger Workflow** for seamless case analysis
+- **20 CLI Commands** for every stage of federal litigation
 
 ## Installation
 
@@ -92,7 +98,16 @@ This Claude Code skill transforms Claude into a senior federal trial attorney wi
 1. Copy this directory to `~/.claude/skills/federal-trial-counsel/`
 2. The skill auto-activates when federal litigation topics are detected
 
-### Build the Pleading Engine
+### Python CLI Engine (Primary)
+
+```bash
+cd scripts
+pip install -e .
+ftc doctor    # Verify installation
+ftc setup     # Auto-install all dependencies
+```
+
+### TypeScript Pleading Engine (Optional)
 
 ```bash
 cd scripts/federal_pleading_engine
@@ -101,6 +116,74 @@ npm run build
 ```
 
 ## Features
+
+### Interactive Case Wizard (NEW in v3.0.0)
+
+The 12-step wizard guides you through complete case intake and document generation:
+
+```
+    ┌─────────────────────────────────────────────────────────────┐
+    │                    12-STEP CASE WIZARD                       │
+    ├─────────────────────────────────────────────────────────────┤
+    │                                                             │
+    │   1. Court & Jurisdiction                                   │
+    │   2. Plaintiff Information                                  │
+    │   3. Defendant Information                                  │
+    │   4. Factual Allegations                                    │
+    │   5. Claims Selection                                       │
+    │   6. Relief Requested                                       │
+    │   7. Administrative Exhaustion                              │
+    │   8. Statute of Limitations                                 │
+    │   9. Case Goals                                             │
+    │  10. Case Summary Review                                    │
+    │  11. Document Selection + Output Format + Save Location     │
+    │  12. Generate Documents                                     │
+    │                                                             │
+    │   Features:                                                 │
+    │   * Save/resume at any step                                │
+    │   * Auto-populates from imported documents                 │
+    │   * Outputs: Markdown, Word (.docx), or both               │
+    │   * Saves to Desktop, Documents, or custom path            │
+    │                                                             │
+    └─────────────────────────────────────────────────────────────┘
+```
+
+```bash
+ftc new           # Start new case wizard
+ftc open CASE-ID  # Resume existing case
+ftc cases         # List all saved cases
+```
+
+### Document Analyzer (NEW in v3.0.0)
+
+Analyze intake documents automatically:
+
+```
+    ┌─────────────────────────────────────────────────────────────┐
+    │                 DOCUMENT ANALYZER PIPELINE                   │
+    ├─────────────────────────────────────────────────────────────┤
+    │                                                             │
+    │   Layer 1: TEXT EXTRACTION                                  │
+    │   PDF (PyPDF2) | DOCX (python-docx) | TXT | MD             │
+    │                         |                                   │
+    │   Layer 2: CLASSIFICATION                                   │
+    │   18 legal document categories + keyword scoring            │
+    │                         |                                   │
+    │   Layer 3: ENTITY EXTRACTION                                │
+    │   Parties | Dates | Case Numbers | Claims | Courts          │
+    │                         |                                   │
+    │   Layer 4: ANALYSIS                                         │
+    │   Per-document report + batch aggregation                   │
+    │                         |                                   │
+    │   Layer 5: WORKFLOW ROUTING                                  │
+    │   complaint_defense | motion_response | discovery_response  │
+    │                                                             │
+    └─────────────────────────────────────────────────────────────┘
+```
+
+```bash
+ftc analyze-docs CASE-ID   # Analyze all intake documents
+```
 
 ### Federal Pleading Engine
 
@@ -118,7 +201,7 @@ The engine generates Rule 12(b)(6)-resilient federal complaints with:
 | **Fact Gap Detection** | Missing allegations identified |
 | **Auto-Suggest** | Recommends claims based on facts |
 
-#### Supported Claims (40+)
+#### Supported Claims (45)
 
 **Constitutional / Civil Rights (§ 1983)**
 - `1983_first_amendment_retaliation`
@@ -182,89 +265,39 @@ The engine generates Rule 12(b)(6)-resilient federal complaints with:
 - `tax_refund_suit`
 - `tax_wrongful_levy`
 
-#### CLI Usage
+### Python CLI — 20 Commands
 
 ```bash
-# Generate complaint from case input
-node dist/cli.js --input case.json --out ./output
+# Case Management
+ftc new                              # Interactive 12-step case wizard
+ftc open CASE-ID                     # Resume existing case
+ftc cases                            # List all saved cases
 
-# Auto-suggest claims based on facts
-node dist/cli.js --input case.json --suggest
+# Analysis & Research
+ftc analyze --case case.json         # Full case analysis with scoring
+ftc suggest --case case.json         # Auto-suggest claims from facts
+ftc risk --case case.json --claim X  # MTD risk scoring for specific claim
+ftc sol --claim X --date 2025-06-15  # Statute of limitations calculator
+ftc analyze-docs CASE-ID             # Analyze intake documents
 
-# List all available claims
-node dist/cli.js --list
+# Document Generation
+ftc draft --case case.json --out .   # Generate complaint draft
+ftc export --input doc.md --out .    # Export to .docx (court-formatted)
 
-# Specify output format
-node dist/cli.js --input case.json --format markdown
+# Reference & Info
+ftc claims                           # Browse 45 federal causes of action
+ftc info CLAIM_KEY                   # Claim details with elements/defenses
+ftc district                         # Manage district configuration
+ftc deposition WITNESS_TYPE          # Generate deposition question outline
+ftc exhibits --case case.json        # Generate exhibit index
+ftc pacer --case case.json           # Generate PACER/ECF filing package
+ftc monitor --case case.json         # Rule 11 duty monitor
+ftc calendar --case case.json        # Generate case filing calendar
+
+# System
+ftc setup                            # Auto-install dependencies
+ftc doctor                           # Diagnostic health check
 ```
-
-#### Input Format (CASE_INPUT)
-
-```json
-{
-  "court": {
-    "district": "Middle District of Florida",
-    "division": "Orlando",
-    "state": "FL"
-  },
-  "parties": {
-    "plaintiffs": [{
-      "name": "John Doe",
-      "citizenship": "Florida",
-      "entity_type": "individual",
-      "residence": "Orlando, FL"
-    }],
-    "defendants": [{
-      "name": "City of Orlando",
-      "type": "local",
-      "capacity": "official",
-      "citizenship": "Florida",
-      "entity_type": "municipality",
-      "role_title": "Municipal Corporation"
-    }]
-  },
-  "facts": [{
-    "date": "2025-06-15",
-    "location": "Orlando, FL",
-    "actors": ["Officer Smith", "John Doe"],
-    "event": "Description of what happened",
-    "documents": ["body cam footage", "medical records"],
-    "harm": "injuries suffered",
-    "damages_estimate": "$250,000",
-    "evidence": ["video", "photos"],
-    "witnesses": ["Jane Doe"]
-  }],
-  "claims_requested": ["1983_fourth_excessive_force"],
-  "relief_requested": ["money", "injunction", "fees", "costs"],
-  "exhaustion": {
-    "ftca_admin_claim_filed": false,
-    "eeoc_charge_filed": false,
-    "erisa_appeal_done": false,
-    "agency_final_action": false
-  },
-  "limitations": {
-    "key_dates": {
-      "injury_date": "2025-06-15"
-    }
-  },
-  "goals": {
-    "settlement_target": "$500,000",
-    "non_monetary_goals": ["policy change"]
-  }
-}
-```
-
-#### Output Generated
-
-For each claim, the engine produces:
-
-1. **Elements Table** - Required allegations for each element
-2. **Preconditions** - Exhaustion, standing, timing requirements
-3. **Defense Warnings** - Anticipated immunity/procedural defenses
-4. **Pleading Checklist** - Fact-to-element mapping status
-5. **Draft Count** - Complaint-ready cause of action
-6. **Fact Gaps** - Missing allegations with suggested sources
-7. **MTD Risk Score** - 0-100 vulnerability with prioritized fixes
 
 ### 19 Litigation Strategy Engines
 
@@ -292,7 +325,7 @@ Location: `references/federal_litigation_engines.md`
 | 18 | **Judge Behavior Profiler** | Detailed judicial tendency profiles |
 | 19 | **Voir Dire Strategy** | Jury selection, bias detection, strike strategy |
 
-### 7-Phase Master Workflow
+### 8-Phase Master Workflow
 
 The skill automatically executes this workflow when federal cases are detected:
 
@@ -302,10 +335,10 @@ The skill automatically executes this workflow when federal cases are detected:
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │  PHASE 1: INTAKE & CLASSIFICATION                                   │
-│  ├── Federal case questionnaire                                     │
+│  ├── Federal case questionnaire / Interactive wizard               │
 │  ├── A/B/C System classification                                    │
 │  ├── Jurisdiction analysis (diversity/federal question)            │
-│  └── Federal Pleading Engine: Auto-suggest claims                  │
+│  └── Document Analyzer: Auto-classify intake docs                  │
 │                                                                     │
 │  PHASE 2: STATUS DETERMINATION                                      │
 │  ├── FRCP timeline analysis                                         │
@@ -338,6 +371,12 @@ The skill automatically executes this workflow when federal cases are detected:
 │  ├── M.D. Fla. Local Rules compliance                              │
 │  └── CM/ECF formatting check                                        │
 │                                                                     │
+│  PHASE 8: POST-GENERATION VERIFICATION                              │
+│  ├── Pre-filing verification (Rule 11, formatting)                 │
+│  ├── Strategic follow-ups (alternative claims, defenses)           │
+│  ├── Client communication (timeline, risks)                        │
+│  └── Procedural next steps (deadlines, CM/ECF export)              │
+│                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -348,57 +387,83 @@ federal-trial-counsel/
 ├── SKILL.md                          # Main skill definition
 ├── README.md                         # This documentation
 ├── MANIFEST.md                       # File index
+├── USAGE.md                          # Detailed usage guide (3000+ words)
 │
 ├── scripts/
-│   ├── federal_pleading_engine/      # Elements-based pleading engine
-│   │   ├── skill.json               # Package configuration
-│   │   ├── README.md                # Engine documentation
-│   │   ├── schema.ts                # Type definitions
-│   │   ├── claim_library.ts         # 40+ causes of action
-│   │   ├── elements.ts              # Element definitions
-│   │   ├── mapper.ts                # Fact-to-element mapping
-│   │   ├── drafter.ts               # Complaint generation
-│   │   ├── risk.ts                  # MTD risk scoring
-│   │   ├── cli.ts                   # Command-line interface
-│   │   └── examples/
-│   │       ├── sample_case_input.json
-│   │       └── sample_output.md
+│   ├── pyproject.toml                # Python package config
 │   │
-│   └── courtlistener/                # Case law research integration
-│       ├── client.ts
-│       ├── types.ts
-│       └── cli.ts
+│   ├── ftc_engine/                   # Python CLI engine (19 modules, 20 commands)
+│   │   ├── __init__.py               # Package init
+│   │   ├── __main__.py               # python -m ftc_engine entry point
+│   │   ├── cli.py                    # CLI dispatcher (20 subcommands)
+│   │   ├── claims.py                 # CLAIM_LIBRARY — 45 federal causes of action
+│   │   ├── risk.py                   # MTD risk scoring engine
+│   │   ├── sol.py                    # Statute of limitations calculator
+│   │   ├── suggest.py                # Claim auto-suggestion from fact patterns
+│   │   ├── drafter.py                # Complaint drafter (caption, parties, counts, prayer)
+│   │   ├── exporter.py               # .docx exporter (court-formatted: TNR 14pt)
+│   │   ├── questions.py              # Post-generation verification questions
+│   │   ├── wizard.py                 # 12-step interactive case wizard
+│   │   ├── case_manager.py           # Persistent case storage & workflow state
+│   │   ├── doc_analyzer.py           # Document analyzer (5-layer pipeline)
+│   │   ├── districts.py              # Federal district court configurations
+│   │   ├── deposition.py             # Deposition question outline generator
+│   │   ├── exhibits.py               # Exhibit index generator
+│   │   ├── filing_calendar.py        # Case filing calendar / document map
+│   │   ├── pacer_meta.py             # PACER/ECF filing package generator
+│   │   ├── rule11_monitor.py         # Rule 11 duty monitor
+│   │   └── sample_case.json          # Example case input
+│   │
+│   ├── tests/                        # Pytest suite (459 tests, 16 files)
+│   │   ├── conftest.py               # Shared fixtures
+│   │   ├── test_case_manager.py      # 31 tests
+│   │   ├── test_claims.py            # 25 tests
+│   │   ├── test_deposition.py        # 28 tests
+│   │   ├── test_districts.py         # 26 tests
+│   │   ├── test_doc_analyzer.py      # 45 tests
+│   │   ├── test_drafter.py           # 23 tests
+│   │   ├── test_exhibits.py          # 35 tests
+│   │   ├── test_exporter.py          # 21 tests
+│   │   ├── test_filing_calendar.py   # 31 tests
+│   │   ├── test_pacer_meta.py        # 31 tests
+│   │   ├── test_questions.py         # 25 tests
+│   │   ├── test_risk.py              # 39 tests
+│   │   ├── test_rule11_monitor.py    # 29 tests
+│   │   ├── test_sol.py               # 17 tests
+│   │   ├── test_suggest.py           # 13 tests
+│   │   └── test_wizard.py            # 40 tests
+│   │
+│   ├── federal_pleading_engine/      # TypeScript engine (encrypted)
+│   │   └── ...
+│   │
+│   └── courtlistener/                # Case law research module
+│       └── ...
 │
-├── references/
-│   ├── federal_litigation_engines.md # 19 litigation strategy modules
-│   └── case_strategy_system.md       # A/B/C classification system
+├── references/                       # 6 legal reference files
+│   ├── federal_litigation_engines.md
+│   ├── case_strategy_system.md
+│   ├── frcp_summary.md
+│   ├── fre_summary.md
+│   ├── mdfl_local_rules.md
+│   └── eleventh_circuit_standards.md
 │
 ├── workflows/
-│   └── 00-master-case-analysis.md    # 7-phase master workflow
+│   └── 00-master-case-analysis.md
 │
-├── modules/
+├── modules/                          # 5 litigation intelligence modules
 │   ├── case_analysis_engine.md
 │   ├── strategy_scoring_system.md
 │   ├── board_risk_dashboard.md
 │   ├── case_timeline_builder.md
 │   └── mandamus_engine.md
 │
-└── assets/templates/
-    ├── pleadings/
-    │   ├── complaint_federal.md
-    │   ├── answer_federal.md
-    │   └── notice_of_removal.md
-    ├── motions/
-    │   ├── motion_to_dismiss.md
-    │   ├── summary_judgment.md
-    │   ├── tro_motion.md
-    │   ├── preliminary_injunction.md
-    │   └── motions_in_limine.md
-    └── discovery/
-        ├── initial_disclosures.md
-        ├── interrogatories_first_set.md
-        ├── requests_for_production.md
-        └── deposition_notice.md
+└── assets/templates/                 # 42 court document templates
+    ├── pleadings/        (6)
+    ├── motions/          (15)
+    ├── discovery/        (8)
+    ├── orders/           (8)
+    ├── appellate/        (2)
+    └── workflows/        (3)
 ```
 
 ## Auto-Trigger Conditions
@@ -451,86 +516,26 @@ The skill activates automatically when detecting:
 | Causation | 10% | Direct and proximate cause |
 | Damages | 5% | Quantification and proof |
 
-## Examples
-
-### Example 1: Excessive Force Case
+## Running Tests
 
 ```bash
-# Create case input file
-cat > case.json << 'EOF'
-{
-  "court": {"district": "Middle District of Florida", "division": "Orlando", "state": "FL"},
-  "parties": {
-    "plaintiffs": [{"name": "John Doe", "citizenship": "Florida", "entity_type": "individual"}],
-    "defendants": [
-      {"name": "Officer Smith", "type": "officer", "capacity": "both", "citizenship": "Florida", "entity_type": "individual"},
-      {"name": "City of Orlando", "type": "local", "capacity": "official", "citizenship": "Florida", "entity_type": "municipality"}
-    ]
-  },
-  "facts": [{
-    "date": "2025-06-15",
-    "location": "Orlando, FL",
-    "actors": ["Officer Smith", "John Doe"],
-    "event": "Officer used excessive force during traffic stop",
-    "harm": "broken arm, contusions",
-    "damages_estimate": "$250,000"
-  }],
-  "claims_requested": ["auto_suggest"],
-  "relief_requested": ["money", "injunction", "fees"]
-}
-EOF
-
-# Generate complaint
-node dist/cli.js --input case.json --out ./output
+cd scripts
+pip install pytest pytest-cov
+pytest                            # 459 tests
+pytest --cov --cov-report=term    # with coverage
+pytest -v --tb=short              # verbose with short tracebacks
 ```
 
-### Example 2: Employment Discrimination
+## Dependencies
 
-```bash
-node dist/cli.js --input employment_case.json --claims "title_vii_disparate_treatment,title_vii_retaliation"
-```
-
-## Adding New Claims
-
-To add a new federal cause of action:
-
-### 1. Add to claim_library.ts
-
-```typescript
-'new_claim_key': {
-  name: 'New Claim Name',
-  category: 'category_name',
-  source: '42 U.S.C. § XXXX',
-  sourceType: 'statute',
-  heightenedPleading: false,
-  exhaustionRequired: false,
-  exhaustionType: null,
-  immunities: ['qualified'],
-  typicalDefenses: ['defense1', 'defense2'],
-  jurisdiction: 'federal_question',
-  statuteOfLimitations: '2 years'
-}
-```
-
-### 2. Add Elements to elements.ts
-
-```typescript
-'new_claim_key': [
-  {
-    number: 1,
-    name: 'Element Name',
-    mustAllege: 'What must be specifically alleged',
-    typicalEvidence: ['evidence1', 'evidence2'],
-    pitfalls: 'Common mistakes'
-  }
-]
-```
-
-### 3. Test
-
-```bash
-node dist/cli.js --input test_case.json --claims "new_claim_key"
-```
+| Component | Requirements |
+|-----------|-------------|
+| Python CLI (ftc_engine) | Python 3.10+ |
+| TypeScript Engine | Node.js 18+, TypeScript |
+| CourtListener Module | Node.js 18+ (native fetch) |
+| Tests | pytest, pytest-cov |
+| PDF Analysis | PyPDF2 >= 3.0.0 |
+| DOCX Export | python-docx >= 1.0.0 |
 
 ## Legal Disclaimer
 
@@ -540,6 +545,14 @@ This tool assists with legal drafting but does not constitute legal advice. All 
 
 Private - For use with Claude Code skills system.
 
-## Version
+## Version History
 
-1.0.0 - Initial release with 40+ claims and 19 litigation engines.
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0.0 | 2025 | Initial release — 40+ claims, 19 litigation engines |
+| 1.1.0 | 2026 | Complete template library, case analysis engine, strategy scoring |
+| 1.2.0 | 2026 | Federal Writ of Mandamus Engine (28 U.S.C. § 1361) |
+| 2.0.0 | 2026 | Python CLI engine (45 claims, 8 modules), 42 templates, 117 tests |
+| 3.0.0 | 2026 | Interactive wizard, document analyzer, case management, 19 modules, 20 CLI commands, 459 tests |
+
+See [USAGE.md](USAGE.md) for detailed usage instructions with infographics.
