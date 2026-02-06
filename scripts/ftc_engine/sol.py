@@ -71,8 +71,14 @@ SOL_DAYS: dict[str, int] = {
 }
 
 
-def calculate_sol(claim_key: str, injury_date_str: str) -> SOLResult:
-    """Calculate SOL deadline for a claim."""
+def calculate_sol(claim_key: str, injury_date_str: str, district_code: str | None = None) -> SOLResult:
+    """Calculate SOL deadline for a claim.
+
+    Args:
+        claim_key: The claim key
+        injury_date_str: Injury date in YYYY-MM-DD format
+        district_code: Optional district code for state-specific SOL override
+    """
     meta = get_claim(claim_key)
     if not meta:
         raise ValueError(f"Unknown claim: {claim_key}")
@@ -85,7 +91,15 @@ def calculate_sol(claim_key: str, injury_date_str: str) -> SOLResult:
     if injury > date.today():
         raise ValueError(f"Injury date {injury_date_str} is in the future")
 
+    # Use district-aware SOL if available
     sol_days = SOL_DAYS.get(claim_key, 1461)
+    if district_code:
+        try:
+            from .districts import get_sol_days_for_district
+            sol_days = get_sol_days_for_district(claim_key, district_code)
+        except Exception:
+            pass  # Fall back to default
+
     deadline = injury + timedelta(days=sol_days)
     remaining = (deadline - date.today()).days
 

@@ -58,27 +58,49 @@ class ExportResult:
     sections: int
 
 
-def _setup_document() -> Document:
-    """Create a new document with court-standard formatting."""
+def _setup_document(district_code: str | None = None) -> Document:
+    """Create a new document with court-standard formatting.
+
+    Args:
+        district_code: Optional district code for district-specific formatting.
+                       Falls back to module-level constants if None.
+    """
     doc = Document()
+
+    # Get formatting config from district if available
+    font_name = FONT_NAME
+    font_size = FONT_SIZE_BODY
+    line_spacing = LINE_SPACING
+    margin = MARGIN
+
+    if district_code:
+        try:
+            from .districts import get_formatting_config
+            fmt = get_formatting_config(district_code)
+            font_name = fmt.get("font_name", FONT_NAME)
+            font_size = Pt(fmt.get("font_size_pt", 12))
+            line_spacing = fmt.get("line_spacing", LINE_SPACING)
+            margin = Inches(fmt.get("margin_inches", 1.0))
+        except Exception:
+            pass  # Fall back to defaults
 
     # Set default font
     style = doc.styles["Normal"]
     font = style.font
-    font.name = FONT_NAME
-    font.size = FONT_SIZE_BODY
+    font.name = font_name
+    font.size = font_size
 
     pf = style.paragraph_format
-    pf.line_spacing = LINE_SPACING
+    pf.line_spacing = line_spacing
     pf.space_after = Pt(0)
     pf.space_before = Pt(0)
 
     # Set margins
     for section in doc.sections:
-        section.top_margin = MARGIN
-        section.bottom_margin = MARGIN
-        section.left_margin = MARGIN
-        section.right_margin = MARGIN
+        section.top_margin = margin
+        section.bottom_margin = margin
+        section.left_margin = margin
+        section.right_margin = margin
 
     return doc
 

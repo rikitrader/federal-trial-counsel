@@ -45,6 +45,17 @@ class QuestionSet:
         return cats
 
 
+# ── District-aware helper ────────────────────────────────────────────────────
+
+def _get_district_name() -> str:
+    """Get active district name for district-aware question text."""
+    try:
+        from .districts import get_active_district
+        return get_active_district().config.name
+    except Exception:
+        return "M.D. Fla."
+
+
 # ── Question generators by category ─────────────────────────────────────────
 
 def _prefiling_questions(case_data: dict, doc_type: str, risk_scores: dict | None = None) -> list[Question]:
@@ -55,7 +66,7 @@ def _prefiling_questions(case_data: dict, doc_type: str, risk_scores: dict | Non
     qs.append(Question(
         category="prefiling",
         priority="critical",
-        text="Has the complaint/motion been reviewed by a licensed attorney admitted to the M.D. Fla. bar?",
+        text=f"Has the complaint/motion been reviewed by a licensed attorney admitted to the {_get_district_name()} bar?",
         context="All filings must be signed by a member of the bar (Local Rule 2.01) or the pro se litigant.",
     ))
 
@@ -112,7 +123,7 @@ def _prefiling_questions(case_data: dict, doc_type: str, risk_scores: dict | Non
     qs.append(Question(
         category="prefiling",
         priority="medium",
-        text="Does the document comply with M.D. Fla. Local Rule formatting (Times New Roman 12pt, double-spaced, 1\" margins, page limits)?",
+        text=f"Does the document comply with {_get_district_name()} Local Rule formatting (Times New Roman 12pt, double-spaced, 1\" margins, page limits)?",
         context="Non-compliant filings may be stricken or returned. Use 'ftc export' for court-formatted .docx output.",
     ))
 
@@ -195,7 +206,7 @@ def _client_questions(case_data: dict, risk_scores: dict | None = None) -> list[
     qs.append(Question(
         category="client",
         priority="high",
-        text="Has the client been informed of the estimated timeline (12-24 months typical for M.D. Fla.) and litigation costs?",
+        text=f"Has the client been informed of the estimated timeline (12-24 months typical for {_get_district_name()}) and litigation costs?",
         context="Client expectations about duration and expense should be set early to avoid dissatisfaction.",
     ))
 
@@ -218,8 +229,8 @@ def _client_questions(case_data: dict, risk_scores: dict | None = None) -> list[
         qs.append(Question(
             category="client",
             priority="high",
-            text="Has the pro se litigant been directed to the M.D. Fla. Pro Se Handbook and Legal Aid resources?",
-            context="The court provides a Pro Se Handbook at flmd.uscourts.gov with essential filing instructions.",
+            text=f"Has the pro se litigant been directed to the {_get_district_name()} Pro Se Handbook and Legal Aid resources?",
+            context="The court provides a Pro Se Handbook with essential filing instructions.",
         ))
 
     # Preservation
@@ -302,7 +313,7 @@ def _procedural_questions(case_data: dict, sol_results: list | None = None) -> l
     qs.append(Question(
         category="procedural",
         priority="medium",
-        text="If filing any discovery motion, has the meet-and-confer requirement been satisfied (M.D. Fla. Local Rule 3.01(g))?",
+        text=f"If filing any discovery motion, has the meet-and-confer requirement been satisfied ({_get_district_name()} Local Rules)?",
         context="Discovery motions filed without certification of good-faith conferral will be denied.",
     ))
 
