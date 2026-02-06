@@ -121,6 +121,23 @@ class TestClassification:
         cat2, conf2 = classify_legal_document(text, filename="random.pdf")
         assert conf1 > conf2
 
+    def test_motion_dismiss_beats_motion_other(self):
+        """Specific motion types must win over the generic motion_other catch-all."""
+        text = """MOTION TO DISMISS under Rule 12(b)(6) for failure to state
+        a claim. Under Iqbal and Twombly, plaintiff's complaint lacks plausibility.
+        Defendant respectfully moves this Court for an order dismissing."""
+        cat, conf = classify_legal_document(text)
+        assert cat == "motion_dismiss"
+
+    def test_motion_other_when_no_specific_match(self):
+        """motion_other should still classify generic motions."""
+        text = """MOTION FOR EXTENSION OF TIME
+        Defendant respectfully moves this Court for an extension of time.
+        Good cause exists for the requested extension."""
+        cat, conf = classify_legal_document(text)
+        assert cat == "motion_other"
+        assert conf > 0.0
+
 
 # ── Layer 3: Entity Extraction ───────────────────────────────────────────
 

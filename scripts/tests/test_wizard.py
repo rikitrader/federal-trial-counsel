@@ -20,6 +20,7 @@ from ftc_engine.wizard import (
     collect_goals,
     show_case_summary,
     collect_document_selection,
+    execute_pipeline,
     AVAILABLE_DOCUMENTS,
     STEP_COLLECTORS,
     _generate_document,
@@ -354,6 +355,91 @@ class TestGenerateDocument:
         state = create_case("gen-003")
         text = _generate_document("nonexistent", sample_case, state)
         assert text == ""
+
+
+# ── Document selection: format + location ──────────────────────────────────
+
+class TestCollectDocumentSelection:
+    """Test output format and save location prompts in Step 11."""
+
+    def test_selects_format_and_location(self, isolated_cases, monkeypatch):
+        state = create_case("sel-001")
+        case_data = {"parties": {"plaintiffs": [], "defendants": [{"name": "X", "entity_type": "individual"}]}}
+        # Simulate: "done" (accept all docs), "2" (markdown), "3" (case-folder)
+        monkeypatch.setattr("builtins.input", _make_input_fn(["done", "2", "3"]))
+        collect_document_selection(state, case_data)
+        assert state.output_format == "markdown"
+        assert state.output_location == ""  # case-folder = empty string
+
+    def test_desktop_location(self, isolated_cases, monkeypatch):
+        state = create_case("sel-002")
+        case_data = {"parties": {"plaintiffs": [], "defendants": [{"name": "X", "entity_type": "individual"}]}}
+        # "done" (docs), "3" (docx), "1" (desktop)
+        monkeypatch.setattr("builtins.input", _make_input_fn(["done", "3", "1"]))
+        collect_document_selection(state, case_data)
+        assert state.output_format == "docx"
+        assert "Desktop" in state.output_location
+        assert "sel-002" in state.output_location
+
+    def test_custom_location(self, isolated_cases, tmp_path, monkeypatch):
+        state = create_case("sel-003")
+        case_data = {"parties": {"plaintiffs": [], "defendants": [{"name": "X", "entity_type": "individual"}]}}
+        custom = str(tmp_path / "my_cases")
+        # "done" (docs), "1" (terminal), "4" (custom), path
+        monkeypatch.setattr("builtins.input", _make_input_fn(["done", "1", "4", custom]))
+        collect_document_selection(state, case_data)
+        assert state.output_location == custom
+
+
+class TestExecutePipelineCopy:
+    """Test that execute_pipeline copies files to output_location."""
+
+    def test_copies_to_output_location(self, isolated_cases, tmp_path, monkeypatch):
+        from ftc_engine.case_manager import load_case_data
+        state = create_case("pipe-001")
+        case_data = load_case_data("pipe-001")
+        # Minimal case data to generate calendar
+        case_data["claims_requested"] = []
+        case_data["parties"] = {"plaintiffs": [{"name": "A"}], "defendants": [{"name": "B"}]}
+        save_case_data("pipe-001", case_data)
+
+        state.documents_selected = ["calendar"]
+        state.output_format = "markdown"
+        dest = tmp_path / "my_output"
+        state.output_location = str(dest)
+
+        # Advance to generate step
+        for step in STEP_KEYS[:-1]:
+            advance_step(state, step)
+
+        generated = execute_pipeline(state, case_data)
+        assert len(generated) >= 1
+
+        # Files should exist in both the case output dir and the custom location
+        dest_files = list(dest.iterdir())
+        assert len(dest_files) >= 1
+        assert any(f.suffix == ".md" for f in dest_files)
+
+    def test_no_copy_when_location_empty(self, isolated_cases, tmp_path, monkeypatch):
+        from ftc_engine.case_manager import load_case_data
+        state = create_case("pipe-002")
+        case_data = load_case_data("pipe-002")
+        case_data["claims_requested"] = []
+        case_data["parties"] = {"plaintiffs": [{"name": "A"}], "defendants": [{"name": "B"}]}
+        save_case_data("pipe-002", case_data)
+
+        state.documents_selected = ["calendar"]
+        state.output_format = "markdown"
+        state.output_location = ""  # no custom location
+
+        for step in STEP_KEYS[:-1]:
+            advance_step(state, step)
+
+        generated = execute_pipeline(state, case_data)
+        assert len(generated) >= 1
+        # All files should be in case folder only
+        for g in generated:
+            assert "pipe-002" in g
 
 
 # ── Step collectors map ─────────────────────────────────────────────────────

@@ -59,6 +59,7 @@ class CaseState:
     pending_steps: list[str] = field(default_factory=lambda: list(STEP_KEYS))
     documents_selected: list[str] = field(default_factory=list)
     output_format: str = "markdown"
+    output_location: str = ""  # custom save path; empty = case folder only
     notes: str = ""
 
 

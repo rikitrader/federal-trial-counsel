@@ -186,17 +186,24 @@ LEGAL_DOCUMENT_CATEGORIES: dict[str, list[str]] = {
 }
 
 
+_GENERIC_CATEGORIES = {"motion_other"}
+
+
 def classify_legal_document(text: str, filename: str = "") -> tuple[str, float]:
     """Classify document text into a legal category.
 
     Returns (category, confidence) where confidence is 0.0–1.0.
     Scoring: keyword count in text + 2x bonus for filename matches.
+    Generic catch-all categories (motion_other) only win if no specific
+    category scored at all.
     """
     text_lower = text.lower()
     fn_lower = filename.lower()
 
     best_cat = "other"
     best_score = 0
+    best_generic_cat = "other"
+    best_generic_score = 0
 
     for category, keywords in LEGAL_DOCUMENT_CATEGORIES.items():
         score = 0
@@ -205,9 +212,19 @@ def classify_legal_document(text: str, filename: str = "") -> tuple[str, float]:
                 score += 1
             if kw in fn_lower:
                 score += 2  # filename match is strong signal
-        if score > best_score:
-            best_score = score
-            best_cat = category
+        if category in _GENERIC_CATEGORIES:
+            if score > best_generic_score:
+                best_generic_score = score
+                best_generic_cat = category
+        else:
+            if score > best_score:
+                best_score = score
+                best_cat = category
+
+    # Prefer specific match; fall back to generic only when nothing specific scored
+    if best_score == 0 and best_generic_score > 0:
+        best_cat = best_generic_cat
+        best_score = best_generic_score
 
     confidence = min(1.0, best_score / 10.0)
     return best_cat, confidence
@@ -227,8 +244,9 @@ def extract_parties(text: str) -> list[ExtractedEntity]:
     entities: list[ExtractedEntity] = []
 
     # Pattern: "Name v. Name" or "Name vs. Name"
+    # Length capped at {0,80} to prevent regex backtracking on long inputs
     vs_pat = re.compile(
-        r"([A-Z][A-Za-z\s,.']+?)\s+(?:v\.|vs\.?)\s+([A-Z][A-Za-z\s,.']+?)(?:[,\n;]|$)",
+        r"([A-Z][A-Za-z\s,.']{0,80}?)\s+(?:v\.|vs\.?)\s+([A-Z][A-Za-z\s,.']{0,80}?)(?:[,\n;]|$)",
         re.MULTILINE,
     )
     for m in vs_pat.finditer(text):
@@ -240,7 +258,7 @@ def extract_parties(text: str) -> list[ExtractedEntity]:
 
     # Pattern: "Plaintiff: Name" or "Defendant: Name"
     role_pat = re.compile(
-        r"(plaintiff|defendant)[s]?\s*[:]\s*([A-Z][A-Za-z\s,.']+?)(?:\n|$)",
+        r"(plaintiff|defendant)[s]?\s*[:]\s*([A-Z][A-Za-z\s,.']{0,80}?)(?:\n|$)",
         re.IGNORECASE | re.MULTILINE,
     )
     for m in role_pat.finditer(text):

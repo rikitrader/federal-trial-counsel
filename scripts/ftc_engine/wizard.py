@@ -539,7 +539,7 @@ def _filter_available_docs(case_data: dict) -> list[dict]:
 
 def collect_document_selection(state: CaseState, case_data: dict) -> dict:
     """Let user select which documents to generate."""
-    _print_header("STEP 11: DOCUMENT SELECTION")
+    _print_header("STEP 11: DOCUMENT SELECTION & OUTPUT")
 
     available = _filter_available_docs(case_data)
     names = [d["name"] for d in available]
@@ -566,6 +566,27 @@ def collect_document_selection(state: CaseState, case_data: dict) -> dict:
     ])
     state.output_format = fmt.split(" — ")[0]
 
+    # Save location
+    home = str(Path.home())
+    case_slug = state.case_number.replace(":", "-").replace("/", "-")
+    loc = _prompt_choice("Save location", [
+        f"desktop — {home}/Desktop/{case_slug}/",
+        f"documents — {home}/Documents/{case_slug}/",
+        f"case-folder — {state.case_path}/output/ (default)",
+        "custom — Enter a custom path",
+    ])
+    loc_key = loc.split(" — ")[0]
+    if loc_key == "desktop":
+        state.output_location = str(Path.home() / "Desktop" / case_slug)
+    elif loc_key == "documents":
+        state.output_location = str(Path.home() / "Documents" / case_slug)
+    elif loc_key == "custom":
+        custom = _prompt("Save path", required=True,
+                         description="absolute or relative path")
+        state.output_location = str(Path(custom).expanduser().resolve())
+    else:
+        state.output_location = ""  # empty = case folder only
+
     save_state(state)
     advance_step(state, "documents")
     return case_data
@@ -575,6 +596,8 @@ def collect_document_selection(state: CaseState, case_data: dict) -> dict:
 
 def execute_pipeline(state: CaseState, case_data: dict) -> list[str]:
     """Generate selected documents, save to case folder, display progress."""
+    import shutil
+
     _print_header("STEP 12: GENERATING DOCUMENTS")
     selected = state.documents_selected
     fmt = state.output_format
@@ -617,11 +640,28 @@ def execute_pipeline(state: CaseState, case_data: dict) -> list[str]:
 
     advance_step(state, "generate")
 
+    # Copy files to user's chosen location if set
+    copied: list[str] = []
+    if state.output_location and generated:
+        dest = Path(state.output_location)
+        dest.mkdir(parents=True, exist_ok=True)
+        for src_path in generated:
+            src = Path(src_path)
+            dst = dest / src.name
+            shutil.copy2(src, dst)
+            copied.append(str(dst))
+
     # Summary
     _print_header("GENERATION COMPLETE")
     print(f"\n  Generated {len(generated)} file(s):")
     for g in generated:
         print(f"    → {g}")
+
+    if copied:
+        print(f"\n  Also saved to: {state.output_location}")
+        for c in copied:
+            print(f"    → {c}")
+
     print(f"\n  Case folder: {state.case_path}")
     print()
 
