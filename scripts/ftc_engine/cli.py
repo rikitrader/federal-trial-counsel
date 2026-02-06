@@ -14,8 +14,13 @@ Commands:
   risk      - MTD risk scoring for specific claims
   sol       - Statute of limitations calculator
   draft     - Generate complaint skeleton
+  export    - Export to court-formatted .docx (Word/Google Docs/PDF)
   claims    - List all available federal claims
   info      - Show claim metadata
+
+Flags:
+  -q, --questions  Show post-generation verification questions
+  -v, --verbose    Show detailed context for each question
 """
 from __future__ import annotations
 import argparse
@@ -108,6 +113,26 @@ def cmd_analyze(args):
 
     print("\n" + "=" * 70)
 
+    # 6. Post-generation questions
+    if getattr(args, "questions", False):
+        from .questions import generate_questions, format_questions
+
+        suggestion_dicts = [{"key": s.claim_key, "score": s.match_score, "showstoppers": s.showstoppers} for s in suggestions]
+        risk_dict = {ck: {"score": calculate_mtd_risk(case_data, ck).overall_score, "level": calculate_mtd_risk(case_data, ck).risk_level} for ck in claims}
+
+        sol_dicts = None
+        if injury_date:
+            sol_dicts = []
+            for ck in claims:
+                try:
+                    sol = calculate_sol(ck, injury_date)
+                    sol_dicts.append({"claim_key": ck, "status": sol.status, "days_remaining": sol.days_remaining})
+                except Exception:
+                    pass
+
+        qs = generate_questions(case_data, doc_type="analyze", suggestions=suggestion_dicts, risk_scores=risk_dict, sol_results=sol_dicts)
+        print(format_questions(qs, verbose=getattr(args, "verbose", False)))
+
 
 def cmd_suggest(args):
     """Auto-suggest claims based on case facts."""
@@ -181,6 +206,11 @@ def cmd_draft(args):
     else:
         print(complaint)
 
+    if getattr(args, "questions", False):
+        from .questions import generate_questions, format_questions
+        qs = generate_questions(case_data, doc_type="draft")
+        print(format_questions(qs, verbose=getattr(args, "verbose", False)))
+
 
 def cmd_claims(args):
     """List all available federal claims."""
@@ -198,6 +228,52 @@ def cmd_claims(args):
                     flags.append(f"imm:{','.join(meta.immunities)}")
                 flag_str = f" [{'; '.join(flags)}]" if flags else ""
                 print(f"  {key:<45} {meta.name}{flag_str}")
+
+
+def cmd_export(args):
+    """Export to court-formatted .docx (Word/Google Docs/PDF-ready)."""
+    from .exporter import export_draft, export_template, export_text, list_templates
+
+    if args.list_templates:
+        templates = list_templates()
+        print(f"{'Category':<15} {'Template Name':<40} {'Path'}")
+        print("-" * 80)
+        for t in templates:
+            print(f"{t['category']:<15} {t['name']:<40} {t['path']}")
+        return
+
+    output = args.output or "output.docx"
+
+    if args.draft:
+        case_data = _load_case(args.input)
+        result = export_draft(case_data, output)
+        print(f"Complaint draft exported to: {result.output_path}")
+        print(f"  Format: .docx (Times New Roman 12pt, double-spaced, 1\" margins)")
+        print(f"  Sections: {result.sections}")
+        print(f"  Open in: Microsoft Word, Google Docs, or LibreOffice")
+        print(f"  To PDF: File > Export/Print as PDF from any of the above")
+    elif args.template:
+        case_data = _load_case(args.input) if args.input else {}
+        result = export_template(args.template, case_data, output)
+        print(f"Template exported to: {result.output_path}")
+        print(f"  Template: {args.template}")
+        print(f"  Format: .docx (Times New Roman 12pt, double-spaced, 1\" margins)")
+        print(f"  Sections: {result.sections}")
+    elif args.text:
+        from pathlib import Path as P
+        text = P(args.text).read_text()
+        result = export_text(text, output)
+        print(f"Text exported to: {result.output_path}")
+        print(f"  Format: .docx (court-formatted)")
+    else:
+        print("Error: specify --draft, --template, --text, or --list-templates", file=sys.stderr)
+        sys.exit(1)
+
+    if getattr(args, "questions", False) and hasattr(args, "input") and args.input:
+        from .questions import generate_questions, format_questions
+        case_data = _load_case(args.input)
+        qs = generate_questions(case_data, doc_type="export")
+        print(format_questions(qs, verbose=getattr(args, "verbose", False)))
 
 
 def cmd_info(args):
@@ -251,6 +327,8 @@ def main():
     p = sub.add_parser("analyze", help="Full case analysis")
     p.add_argument("-i", "--input", required=True, help="Case JSON file")
     p.add_argument("-o", "--output", help="Output directory")
+    p.add_argument("-q", "--questions", action="store_true", help="Show post-generation verification questions")
+    p.add_argument("-v", "--verbose", action="store_true", help="Show detailed context for questions")
 
     # suggest
     p = sub.add_parser("suggest", help="Auto-suggest claims")
@@ -273,9 +351,22 @@ def main():
     p = sub.add_parser("draft", help="Generate complaint")
     p.add_argument("-i", "--input", required=True, help="Case JSON file")
     p.add_argument("-o", "--output", help="Output file path")
+    p.add_argument("-q", "--questions", action="store_true", help="Show post-generation verification questions")
+    p.add_argument("-v", "--verbose", action="store_true", help="Show detailed context for questions")
 
     # claims
     sub.add_parser("claims", help="List all claims")
+
+    # export
+    p = sub.add_parser("export", help="Export to .docx (Word/Google Docs/PDF)")
+    p.add_argument("--draft", action="store_true", help="Export generated complaint draft")
+    p.add_argument("-t", "--template", help="Template path (e.g. motions/motion_to_dismiss)")
+    p.add_argument("--text", help="Path to markdown/text file to convert")
+    p.add_argument("-i", "--input", help="Case JSON file (for placeholder filling)")
+    p.add_argument("-o", "--output", help="Output .docx file path")
+    p.add_argument("--list-templates", action="store_true", help="List all available templates")
+    p.add_argument("-q", "--questions", action="store_true", help="Show post-generation verification questions")
+    p.add_argument("-v", "--verbose", action="store_true", help="Show detailed context for questions")
 
     # info
     p = sub.add_parser("info", help="Claim metadata")
@@ -293,6 +384,7 @@ def main():
         "risk": cmd_risk,
         "sol": cmd_sol,
         "draft": cmd_draft,
+        "export": cmd_export,
         "claims": cmd_claims,
         "info": cmd_info,
     }
